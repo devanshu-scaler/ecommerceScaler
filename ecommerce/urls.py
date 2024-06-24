@@ -1,11 +1,20 @@
-from django.urls import path
-from .views import UserRegistrationView, UserDetailView, ShippingAddressListView, ShippingAddressDetailView, BillingAddressListView, BillingAddressDetailView
-from .views import RegisterView
+from django.urls import path,include
+from rest_framework.routers import DefaultRouter
+
+from .views.user_views import UserRegistrationView, UserDetailView, ShippingAddressListView, ShippingAddressDetailView, BillingAddressListView, BillingAddressDetailView
+from .views.user_views import RegisterView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .views import PasswordResetView, PasswordResetConfirmView
+from .views.user_views import PasswordResetView, PasswordResetConfirmView
+from .views.products_views import ProductViewSet
+router = DefaultRouter()
+# Register the viewset with the router
+router.register(r'products', ProductViewSet, basename='product')
+
+
+
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='user-registration'),
     path('login/',TokenObtainPairView.as_view(),name='user-login'),
@@ -22,4 +31,7 @@ urlpatterns = [
     
     path('users/<int:user_id>/billing_addresses/', BillingAddressListView.as_view(), name='billing-address-list'),
     path('users/<int:user_id>/billing_addresses/<int:address_pk>/', BillingAddressDetailView.as_view(), name='billing-address-detail'),
+    
+    path('', include(router.urls))
+         
 ]
